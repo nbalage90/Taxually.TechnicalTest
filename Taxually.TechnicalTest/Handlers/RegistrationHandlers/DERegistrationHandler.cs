@@ -12,16 +12,14 @@ public class DERegistrationHandler : RegistrationHandlerBase
         this.taxuallyQueueClient = taxuallyQueueClient;
     }
 
-    public override void CreateRegistration(VatRegistrationRequest request)
+    public async override Task CreateRegistrationAsync(VatRegistrationRequest request)
     {
         // Germany requires an XML document to be uploaded to register for a VAT number
-        using (var stringwriter = new StringWriter())
-        {
-            var serializer = new XmlSerializer(typeof(VatRegistrationRequest));
-            serializer.Serialize(stringwriter, request);
-            var xml = stringwriter.ToString();
-            // Queue xml doc to be processed
-            taxuallyQueueClient.EnqueueAsync("vat-registration-xml", xml).Wait();
-        }
+        using var stringwriter = new StringWriter();
+        var serializer = new XmlSerializer(typeof(VatRegistrationRequest));
+        serializer.Serialize(stringwriter, request);
+        var xml = stringwriter.ToString();
+        // Queue xml doc to be processed
+        await taxuallyQueueClient.EnqueueAsync("vat-registration-xml", xml);
     }
 }

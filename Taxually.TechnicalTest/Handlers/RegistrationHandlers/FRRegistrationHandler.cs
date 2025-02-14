@@ -12,7 +12,7 @@ public class FRRegistrationHandler : RegistrationHandlerBase
         this.taxuallyQueueClient = taxuallyQueueClient;
     }
 
-    public override void CreateRegistration(VatRegistrationRequest request)
+    public async override Task CreateRegistrationAsync(VatRegistrationRequest request)
     {
         // France requires an excel spreadsheet to be uploaded to register for a VAT number
         var csvBuilder = new StringBuilder();
@@ -20,6 +20,6 @@ public class FRRegistrationHandler : RegistrationHandlerBase
         csvBuilder.AppendLine($"{request.CompanyName}{request.CompanyId}");
         var csv = Encoding.UTF8.GetBytes(csvBuilder.ToString());
         // Queue file to be processed
-        taxuallyQueueClient.EnqueueAsync("vat-registration-csv", csv).Wait();
+        await taxuallyQueueClient.EnqueueAsync("vat-registration-csv", csv);
     }
 }

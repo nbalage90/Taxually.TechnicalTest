@@ -11,9 +11,9 @@ public class GBRegistrationHandler : RegistrationHandlerBase
         this.taxuallyHttpClient = taxuallyHttpClient;
     }
 
-    public override void CreateRegistration(VatRegistrationRequest request)
+    public async override Task CreateRegistrationAsync(VatRegistrationRequest request)
     {
         // UK has an API to register for a VAT number
-        taxuallyHttpClient.PostAsync("https://api.uktax.gov.uk", request).Wait();
+        await taxuallyHttpClient.PostAsync("https://api.uktax.gov.uk", request);
     }
 }

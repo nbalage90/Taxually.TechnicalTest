@@ -20,7 +20,7 @@ public class VatRegistrationExceptionHandler(ILogger<VatRegistrationExceptionHan
             ),
             _ =>
             (
-               exception.Message,
+                exception.Message,
                 exception.GetType().Name,
                 StatusCodes.Status500InternalServerError
             )

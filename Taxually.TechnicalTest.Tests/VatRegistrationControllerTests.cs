@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Taxually.TechnicalTest.Controllers;
+using Taxually.TechnicalTest.Exceptions;
+using Taxually.TechnicalTest.Factories;
 using Taxually.TechnicalTest.Models;
 
 namespace Taxually.TechnicalTest.Tests;
@@ -10,7 +12,7 @@ public class VatRegistrationControllerTests
     private readonly Mock<ITaxuallyHttpClient> _httpClientMock = new();
     private readonly Mock<ITaxuallyQueueClient> _queueClientMock = new();
 
-    private VatRegistrationController _controller;
+    private readonly VatRegistrationController _controller;
 
     public VatRegistrationControllerTests()
     {
@@ -78,7 +80,9 @@ public class VatRegistrationControllerTests
             CompanyName = "Other Test Company"
         };
 
-        var ex = Assert.ThrowsAsync<Exception>(() => _controller.Post(request));
-        Assert.That(ex.Message, Is.EqualTo("Country not supported"));
+        var result = await _controller.Post(request);
+
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.GetType(), Is.EqualTo(typeof(BadRequestObjectResult)));
     }
 }
