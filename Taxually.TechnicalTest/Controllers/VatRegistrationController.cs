@@ -19,7 +19,7 @@ namespace Taxually.TechnicalTest.Controllers
         {
             try
             {
-                logger.LogInformation($"Request handled: country: \"{request.Country}\", company name: \"{request.CompanyName}\", company id: \"{request.CompanyId}\"");
+                logger.LogInformation("Request handled: country: \"{CountryName}\", company name: \"{CompanyName}\", company id: \"{CompanyId}\"", request.Country, request.CompanyName, request.CompanyId);
                 await countryFactory.HandleAsync(request);
             }
             catch (CountryNotSupportedException ex)
