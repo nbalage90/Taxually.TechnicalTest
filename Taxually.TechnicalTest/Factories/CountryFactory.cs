@@ -8,14 +8,14 @@ public class CountryFactory
 {
     private readonly ITaxuallyHttpClient taxuallyHttpClient;
     private readonly ITaxuallyQueueClient taxuallyQueueClient;
-
+    private readonly IConfiguration configuration;
     private readonly Dictionary<string, RegistrationHandlerBase> countryRegistry = [];
 
-    public CountryFactory(ITaxuallyHttpClient taxuallyHttpClient, ITaxuallyQueueClient taxuallyQueueClient)
+    public CountryFactory(ITaxuallyHttpClient taxuallyHttpClient, ITaxuallyQueueClient taxuallyQueueClient, IConfiguration configuration)
     {
         this.taxuallyHttpClient = taxuallyHttpClient;
         this.taxuallyQueueClient = taxuallyQueueClient;
-
+        this.configuration = configuration;
         Initialize();
     }
 
@@ -30,8 +30,8 @@ public class CountryFactory
 
     private void Initialize()
     {
-        countryRegistry.Add("GB", new GBRegistrationHandler(taxuallyHttpClient));
-        countryRegistry.Add("FR", new FRRegistrationHandler(taxuallyQueueClient));
-        countryRegistry.Add("DE", new DERegistrationHandler(taxuallyQueueClient));
+        countryRegistry.Add("GB", new GBRegistrationHandler(taxuallyHttpClient, configuration));
+        countryRegistry.Add("FR", new FRRegistrationHandler(taxuallyQueueClient, configuration));
+        countryRegistry.Add("DE", new DERegistrationHandler(taxuallyQueueClient, configuration));
     }
 }

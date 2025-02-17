@@ -1,7 +1,11 @@
+using Microsoft.Extensions.Configuration;
 using Taxually.TechnicalTest;
+using Taxually.TechnicalTest.Factories;
 using Taxually.TechnicalTest.Handlers.ExceptionHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var configuration = builder.Configuration;
 
 // Add services to the container.
 
@@ -13,6 +17,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<ITaxuallyHttpClient, TaxuallyHttpClient>();
 builder.Services.AddTransient<ITaxuallyQueueClient, TaxuallyQueueClient>();
+builder.Services.AddTransient<CountryFactory>();
+builder.Services.AddSingleton<IConfiguration>(provider => configuration);
 
 builder.Services.AddExceptionHandler<VatRegistrationExceptionHandler>();
 

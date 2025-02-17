@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Taxually.TechnicalTest.Controllers;
-using Taxually.TechnicalTest.Exceptions;
 using Taxually.TechnicalTest.Factories;
 using Taxually.TechnicalTest.Models;
 
@@ -12,11 +12,16 @@ public class VatRegistrationControllerTests
     private readonly Mock<ITaxuallyHttpClient> _httpClientMock = new();
     private readonly Mock<ITaxuallyQueueClient> _queueClientMock = new();
 
+    private IConfiguration _configuration;
+    private CountryFactory _countryFactory;
+
     private readonly VatRegistrationController _controller;
 
     public VatRegistrationControllerTests()
     {
-        _controller = new(_httpClientMock.Object, _queueClientMock.Object);
+        SetupMocks();
+
+        _controller = new(_countryFactory);
     }
 
     [Test]
@@ -84,5 +89,32 @@ public class VatRegistrationControllerTests
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result.GetType(), Is.EqualTo(typeof(BadRequestObjectResult)));
+    }
+
+    private void SetupMocks()
+    {
+        _httpClientMock.Setup(x => x.PostAsync(It.IsAny<string>(), It.IsAny<object>()))
+            .Returns(() => Task.CompletedTask);
+        _queueClientMock.Setup(x => x.EnqueueAsync(It.IsAny<string>(), It.IsAny<object>()))
+            .Returns(() => Task.CompletedTask);
+        _configuration = CreateConfigurationMock();
+
+        _countryFactory = new CountryFactory(_httpClientMock.Object, _queueClientMock.Object, _configuration);
+    }
+
+    private static IConfiguration CreateConfigurationMock()
+    {
+        var configs = new Dictionary<string, string>()
+        {
+            { "Constants:XMLQueueName", "test_url" },
+            { "Constants:CSVQueueName", "test_url" },
+            { "Constants:GBApiEndpoint", "test_url" }
+        };
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(configs)
+            .Build();
+
+        return configuration;
     }
 }

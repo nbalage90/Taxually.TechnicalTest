@@ -2,18 +2,13 @@
 
 namespace Taxually.TechnicalTest.Handlers.RegistrationHandlers;
 
-public class GBRegistrationHandler : RegistrationHandlerBase
+public class GBRegistrationHandler(ITaxuallyHttpClient taxuallyHttpClient, IConfiguration configuration) : RegistrationHandlerBase
 {
-    private readonly ITaxuallyHttpClient taxuallyHttpClient;
-
-    public GBRegistrationHandler(ITaxuallyHttpClient taxuallyHttpClient)
-    {
-        this.taxuallyHttpClient = taxuallyHttpClient;
-    }
-
     public async override Task CreateRegistrationAsync(VatRegistrationRequest request)
     {
-        // UK has an API to register for a VAT number
-        await taxuallyHttpClient.PostAsync("https://api.uktax.gov.uk", request);
+        if (string.IsNullOrEmpty(configuration["Constants:GBApiEndpoint"]))
+            throw new KeyNotFoundException();
+
+        await taxuallyHttpClient.PostAsync(configuration["Constants:GBApiEndpoint"], request);
     }
 }

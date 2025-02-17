@@ -9,10 +9,8 @@ namespace Taxually.TechnicalTest.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class VatRegistrationController(ITaxuallyHttpClient taxuallyHttpClient, ITaxuallyQueueClient taxuallyQueueClient) : ControllerBase
+    public class VatRegistrationController(CountryFactory countryFactory) : ControllerBase
     {
-        private readonly CountryFactory _countryFactory = new(taxuallyHttpClient, taxuallyQueueClient);
-
         /// <summary>
         /// Registers a company for a VAT number in a given country
         /// </summary>
@@ -21,7 +19,7 @@ namespace Taxually.TechnicalTest.Controllers
         {
             try
             {
-                await _countryFactory.HandleAsync(request);
+                await countryFactory.HandleAsync(request);
             }
             catch (CountryNotSupportedException ex)
             {
